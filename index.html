@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dura Tenera Admin</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <section id="loginPage" class="login-page">
+    <div class="login-card">
+      <div class="brand-badge">DT</div>
+      <h1>Dura Tenera Admin</h1>
+      <p>Login untuk mengakses dashboard internal.</p>
+
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Masukkan username" autocomplete="username" />
+      </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Masukkan password" autocomplete="current-password" />
+      </div>
+
+      <button id="loginBtn" class="primary-btn full-btn" onclick="login()">Login</button>
+      <div id="loginMessage" class="info-text"></div>
+    </div>
+  </section>
+
+  <section id="appPage" class="app hidden">
+    <div id="overlay" class="overlay" onclick="closeSidebar()"></div>
+
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-top">
+        <div>
+          <div class="sidebar-title">Dura Tenera</div>
+          <div class="sidebar-subtitle">Admin Internal</div>
+        </div>
+        <button class="icon-btn close-btn" onclick="closeSidebar()">×</button>
+      </div>
+
+      <nav class="menu">
+        <button onclick="showPage('dashboardPage'); closeSidebar();" class="menu-link">Dashboard</button>
+        <button onclick="showPage('inputPage'); closeSidebar();" class="menu-link">Input Transaksi</button>
+        <button onclick="showPage('waPage'); closeSidebar();" class="menu-link">Rekap WA</button>
+      </nav>
+    </aside>
+
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="icon-btn menu-btn" onclick="toggleSidebar()">☰</button>
+        <div>
+          <h3>Dura Tenera Admin</h3>
+          <small id="userInfo">Memuat user...</small>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <span id="syncInfo" class="sync-text">Realtime aktif</span>
+        <button class="secondary-btn" onclick="exportExcel()">Export Excel</button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <section id="dashboardPage" class="page">
+        <div class="section-head">
+          <div>
+            <h2>Dashboard Hari Ini</h2>
+            <p class="section-subtitle">Ringkasan transaksi harian yang sinkron antar device.</p>
+          </div>
+          <button class="secondary-btn" onclick="refreshToday()">Refresh</button>
+        </div>
+
+        <div class="card-grid">
+          <div class="card summary-card">
+            <h4>Total Transaksi</h4>
+            <div id="dashTotalTransaksi" class="big-number">0</div>
+          </div>
+          <div class="card summary-card">
+            <h4>Total Tenera</h4>
+            <div id="dashTotalTenera" class="big-number">0</div>
+          </div>
+          <div class="card summary-card">
+            <h4>Total Dura</h4>
+            <div id="dashTotalDura" class="big-number">0</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h4>Data Terbaru</h4>
+              <p class="muted-text">Menampilkan data transaksi hari ini.</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Tanggal</th>
+                  <th>Jam</th>
+                  <th>Supplier</th>
+                  <th>Sopir</th>
+                  <th>Plat</th>
+                  <th>Tenera</th>
+                  <th>Dura</th>
+                  <th>Total</th>
+                  <th>% Tenera</th>
+                  <th>% Dura</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="inputPage" class="page hidden">
+        <div class="section-head">
+          <div>
+            <h2>Input Transaksi</h2>
+            <p class="section-subtitle">Pastikan nilai Tenera dan Dura berjumlah 100.</p>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-grid">
+            <div class="input-group">
+              <label for="tanggal">Tanggal</label>
+              <input type="date" id="tanggal" />
+            </div>
+
+            <div class="input-group">
+              <label for="supplier">Supplier</label>
+              <input type="text" id="supplier" placeholder="Nama supplier" />
+            </div>
+
+            <div class="input-group">
+              <label for="sopir">Nama Sopir</label>
+              <input type="text" id="sopir" placeholder="Nama sopir" />
+            </div>
+
+            <div class="input-group">
+              <label for="plat">Plat Nomor</label>
+              <input type="text" id="plat" placeholder="Plat nomor" />
+            </div>
+
+            <div class="input-group">
+              <label for="tenera">Tenera</label>
+              <input type="number" id="tenera" placeholder="0" />
+            </div>
+
+            <div class="input-group">
+              <label for="dura">Dura</label>
+              <input type="number" id="dura" placeholder="0" />
+            </div>
+          </div>
+
+          <div class="validation-box">
+            <div class="validation-item">Total: <strong id="previewTotal">0</strong></div>
+            <div class="validation-item">% Tenera: <strong id="previewTenera">0</strong>%</div>
+            <div class="validation-item">% Dura: <strong id="previewDura">0</strong>%</div>
+            <div id="statusBox" class="status invalid">Belum valid</div>
+          </div>
+
+          <div class="action-row">
+            <button id="saveBtn" class="primary-btn" onclick="saveTransaction()" disabled>Simpan</button>
+            <div id="saveMessage" class="info-text"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="waPage" class="page hidden">
+        <div class="section-head">
+          <div>
+            <h2>Rekap WA Harian</h2>
+            <p class="section-subtitle">Generate narasi WhatsApp dari data hari ini.</p>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="wa-actions">
+            <button class="secondary-btn" onclick="generateWA()">Generate Pesan</button>
+            <button class="secondary-btn" onclick="copyWA()">Copy</button>
+            <button class="primary-btn" onclick="sendWA()">Buka WhatsApp</button>
+          </div>
+
+          <textarea id="waText" rows="18" placeholder="Narasi WA akan muncul di sini..."></textarea>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
